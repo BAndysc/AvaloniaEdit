@@ -2,6 +2,9 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AvaloniaVersion>0.10.7</AvaloniaVersion>
+    <RestoreAdditionalProjectSources>
+      https://nuget.avaloniaui.net/repository/avalonia-all/index.json
+    </RestoreAdditionalProjectSources>
+    <AvaloniaVersion>0.10.999-cibuild0016933-beta</AvaloniaVersion>
   </PropertyGroup>
 </Project>
