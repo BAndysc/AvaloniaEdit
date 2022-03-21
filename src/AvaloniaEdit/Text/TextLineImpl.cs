@@ -51,7 +51,8 @@ namespace AvaloniaEdit.Text
 
             if (visibleLength >= MaxCharactersPerLine)
             {
-                throw new NotSupportedException("Too many characters per line");
+                return new TextLineImpl(paragraphProperties, firstIndex, runs, trailing);
+                //throw new NotSupportedException("Too many characters per line");
             }
 
             while (true)
