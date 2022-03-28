@@ -299,6 +299,12 @@ namespace AvaloniaEdit.Search
             _messageViewContent = e.NameScope.Find<ContentPresenter>("PART_MessageContent");
         }
 
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            _messageView.IsOpen = false;
+        }
+
         private void ValidateSearchText()
         {
             if (_searchTextBox == null)
