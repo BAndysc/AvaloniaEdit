@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -26,6 +27,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
@@ -185,11 +187,12 @@ namespace AvaloniaEdit.Search
 
         static SearchPanel()
         {
-            UseRegexProperty.Changed.Subscribe(SearchPatternChangedCallback);
-            MatchCaseProperty.Changed.Subscribe(SearchPatternChangedCallback);
-            WholeWordsProperty.Changed.Subscribe(SearchPatternChangedCallback);
-            SearchPatternProperty.Changed.Subscribe(SearchPatternChangedCallback);
-
+            UseRegexProperty.Changed.Cast<AvaloniaPropertyChangedEventArgs>()
+                .Merge(MatchCaseProperty.Changed)
+                .Merge(WholeWordsProperty.Changed)
+                .Merge(SearchPatternProperty.Changed)
+                .Throttle(TimeSpan.FromMilliseconds(400), AvaloniaScheduler.Instance)
+                .Subscribe(SearchPatternChangedCallback);
             MarkerBrushProperty.Changed.Subscribe(MarkerBrushChangedCallback);
         }
 
