@@ -19,12 +19,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using AvaloniaEdit.Rendering;
@@ -140,11 +143,18 @@ namespace AvaloniaEdit.Search
 
         private ISearchStrategy _strategy;
 
+        private static IDisposable lastSearchPatternChangedTimer;
+        
         private static void SearchPatternChangedCallback(AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Sender is SearchPanel panel)
             {
-                panel.UpdateSearch();
+                lastSearchPatternChangedTimer?.Dispose();
+                lastSearchPatternChangedTimer = DispatcherTimer.RunOnce(() =>
+                {
+                    panel.UpdateSearch();
+                    lastSearchPatternChangedTimer = null;
+                }, TimeSpan.FromMilliseconds(400));
             }
         }
 
@@ -213,6 +223,10 @@ namespace AvaloniaEdit.Search
             if (_currentDocument != null)
                 _currentDocument.TextChanged -= TextArea_Document_TextChanged;
             _textArea.DefaultInputHandler.NestedInputHandlers.Remove(_handler);
+            _textArea = null;
+            _textEditor = null;
+            _currentDocument = null;
+            ((ISetLogicalParent)this).SetParent(null);
         }
 
         private void AttachInternal(TextEditor textEditor)
@@ -483,10 +497,9 @@ namespace AvaloniaEdit.Search
         public void Close()
         {
             _textArea.RemoveChild(this);
-
             if (_messageView != null)
-                _messageView.IsVisible = false;
-
+                _messageView.IsOpen = false;
+            // _messageView.IsVisible = false; // todo ava11
             _textArea.TextView.BackgroundRenderers.Remove(_renderer);
             
             IsClosed = true;
