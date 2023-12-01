@@ -93,10 +93,6 @@ namespace AvaloniaEdit.CodeCompletion
             //Deactivated += OnDeactivated; //Not needed?
 
             Closed += (sender, args) => DetachEvents();
-
-            AttachEvents();
-
-            Initailize();
         }
 
         protected virtual void OnClosed()
@@ -106,18 +102,14 @@ namespace AvaloniaEdit.CodeCompletion
 
         private void Initailize()
         {
-            if (_document != null && StartOffset != TextArea.Caret.Offset)
-            {
-                SetPosition(new TextViewPosition(_document.GetLocation(StartOffset)));
-            }
-            else
-            {
-                SetPosition(TextArea.Caret.Position);
-            }
+            StartOffset = EndOffset = TextArea.Caret.Offset;
+            SetPosition(TextArea.Caret.Position);
         }
 
         public void Show()
         {
+            Initailize();
+            AttachEvents();
             UpdatePosition();
 
             Open();
@@ -133,7 +125,7 @@ namespace AvaloniaEdit.CodeCompletion
 
         #region Event Handlers
 
-        private void AttachEvents()
+        protected virtual void AttachEvents()
         {
             ((ISetLogicalParent)this).SetParent(TextArea.GetVisualRoot() as ILogical);
 

@@ -96,9 +96,9 @@ namespace AvaloniaEdit.CodeCompletion
         public void SelectIndex(int index)
         {
             if (index >= ItemCount)
-                index = ItemCount - 1;
-            if (index < 0)
                 index = 0;
+            if (index < 0)
+                index = ItemCount - 1;
             SelectedIndex = index;
             ScrollIntoView(SelectedItem);
         }

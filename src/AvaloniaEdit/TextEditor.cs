@@ -292,7 +292,25 @@ namespace AvaloniaEdit
             ScrollViewer = (ScrollViewer)e.NameScope.Find("PART_ScrollViewer");
             ScrollViewer.Content = TextArea;
 
-            searchPanel = SearchPanel.Install(this);
+            if (searchPanel == null)
+                searchPanel = SearchPanel.Install(this);
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (searchPanel == null && wasDetached)
+                searchPanel = SearchPanel.Install(this);
+        }
+
+        private bool wasDetached;
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            searchPanel?.Uninstall();
+            searchPanel = null;
+            wasDetached = true;
         }
 
         protected override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
