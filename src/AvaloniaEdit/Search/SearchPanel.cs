@@ -165,12 +165,19 @@ namespace AvaloniaEdit.Search
 
         private ISearchStrategy _strategy;
 
+        private static IDisposable lastSearchPatternChangedTimer;
+        
         private static void SearchPatternChangedCallback(AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Sender is SearchPanel panel)
             {
-                panel.ValidateSearchText();
-                panel.UpdateSearch();
+                lastSearchPatternChangedTimer?.Dispose();
+                lastSearchPatternChangedTimer = DispatcherTimer.RunOnce(() =>
+                {
+                    panel.ValidateSearchText();
+                    panel.UpdateSearch();
+                    lastSearchPatternChangedTimer = null;
+                }, TimeSpan.FromMilliseconds(400));
             }
         }
 
@@ -188,12 +195,10 @@ namespace AvaloniaEdit.Search
 
         static SearchPanel()
         {
-            UseRegexProperty.Changed.Cast<AvaloniaPropertyChangedEventArgs>()
-                .Merge(MatchCaseProperty.Changed)
-                .Merge(WholeWordsProperty.Changed)
-                .Merge(SearchPatternProperty.Changed)
-                .Throttle(TimeSpan.FromMilliseconds(400), AvaloniaScheduler.Instance)
-                .Subscribe(SearchPatternChangedCallback);
+            UseRegexProperty.Changed.Subscribe(SearchPatternChangedCallback);
+            MatchCaseProperty.Changed.Subscribe(SearchPatternChangedCallback);
+            WholeWordsProperty.Changed.Subscribe(SearchPatternChangedCallback);
+            SearchPatternProperty.Changed.Subscribe(SearchPatternChangedCallback);
             MarkerBrushProperty.Changed.Subscribe(MarkerBrushChangedCallback);
         }
 
@@ -249,6 +254,10 @@ namespace AvaloniaEdit.Search
             if (_currentDocument != null)
                 _currentDocument.TextChanged -= TextArea_Document_TextChanged;
             _textArea.DefaultInputHandler.NestedInputHandlers.Remove(_handler);
+            _textArea = null;
+            _textEditor = null;
+            _currentDocument = null;
+            ((ISetLogicalParent)this).SetParent(null);
         }
 
         private void AttachInternal(TextArea textArea)
@@ -503,7 +512,8 @@ namespace AvaloniaEdit.Search
         public void Close()
         {
             _textArea.RemoveChild(this);
-            _messageView.IsOpen = false;
+            if (_messageView != null)
+                _messageView.IsOpen = false;
             _textArea.TextView.BackgroundRenderers.Remove(_renderer);
             
             IsClosed = true;
