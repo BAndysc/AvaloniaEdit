@@ -38,6 +38,7 @@ namespace AvaloniaEdit.CodeCompletion
         public CompletionList()
         {
             DoubleTapped += OnDoubleTapped;
+            _completionData.CollectionChanged += CompletionDataChanged;
 
             CompletionAcceptKeys = new[]
             {
@@ -46,6 +47,11 @@ namespace AvaloniaEdit.CodeCompletion
             };
         }
 
+        // custom: to support reusable CompletionWindow, i.e. create once and reuse
+        private void CompletionDataChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            _currentText = null;
+        }
 
         /// <summary>
         /// If true, the CompletionList is filtered to show only matching items. Also enables search by substring.

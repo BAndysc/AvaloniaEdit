@@ -67,8 +67,6 @@ namespace AvaloniaEdit.CodeCompletion
             LogicalChildren.Add(_toolTip);
 
             //_toolTip.Closed += (o, e) => ((Popup)o).Child = null;
-
-            AttachEvents();
         }
 
         protected override void OnClosed()
@@ -143,8 +141,9 @@ namespace AvaloniaEdit.CodeCompletion
             item?.Complete(TextArea, new AnchorSegment(TextArea.Document, StartOffset, EndOffset - StartOffset), e);
         }
 
-        private void AttachEvents()
+        protected override void AttachEvents()
         {
+            base.AttachEvents();
             CompletionList.InsertionRequested += CompletionList_InsertionRequested;
             CompletionList.SelectionChanged += CompletionList_SelectionChanged;
             TextArea.Caret.PositionChanged += CaretPositionChanged;
@@ -209,6 +208,8 @@ namespace AvaloniaEdit.CodeCompletion
         /// </summary>
         public bool CloseWhenCaretAtBeginning { get; set; }
 
+        public void RefreshCompletion() => CaretPositionChanged(this, EventArgs.Empty);
+
         private void CaretPositionChanged(object sender, EventArgs e)
         {
             var offset = TextArea.Caret.Offset;
@@ -222,8 +223,8 @@ namespace AvaloniaEdit.CodeCompletion
                 {
                     CompletionList.SelectItem(string.Empty);
 
-                    if (CompletionList.ListBox.ItemCount == 0) IsVisible = false;
-                    else IsVisible = true;
+                    if (CompletionList.ListBox.ItemCount == 0) IsOpen = false;
+                    else IsOpen = true;
                 }
                 return;
             }
@@ -241,8 +242,8 @@ namespace AvaloniaEdit.CodeCompletion
                 {
                     CompletionList.SelectItem(document.GetText(StartOffset, offset - StartOffset));
 
-                    if (CompletionList.ListBox.ItemCount == 0) IsVisible = false;
-                    else IsVisible = true;
+                    if (CompletionList.ListBox.ItemCount == 0) IsOpen = false;
+                    else IsOpen = true;
                 }
             }
         }
