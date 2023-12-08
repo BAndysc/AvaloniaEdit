@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -498,8 +497,7 @@ namespace AvaloniaEdit.Search
         {
             _textArea.RemoveChild(this);
             if (_messageView != null)
-                _messageView.IsOpen = false;
-            // _messageView.IsVisible = false; // todo ava11
+                _messageView.IsVisible = false;
             _textArea.TextView.BackgroundRenderers.Remove(_renderer);
             
             IsClosed = true;

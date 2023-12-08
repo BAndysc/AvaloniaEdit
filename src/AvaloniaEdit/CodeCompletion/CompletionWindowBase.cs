@@ -102,7 +102,7 @@ namespace AvaloniaEdit.CodeCompletion
 
         public void Show()
         {
-            Initailize();
+            Initialize();
             AttachEvents();
             UpdatePosition();
 
