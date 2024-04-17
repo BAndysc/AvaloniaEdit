@@ -7,6 +7,9 @@
     <PackageDescription>This project is a port of AvalonEdit, a WPF-based text editor for Avalonia.</PackageDescription>
     <PackageTags>editor;code-editor;avalonia;text-editor;netstandard</PackageTags>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <RestoreAdditionalProjectSources>
+      https://nuget-feed-nightly.avaloniaui.net/v3/index.json;
+    </RestoreAdditionalProjectSources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.1.999-cibuild0045870-beta" />
+    <PackageReference Include="Avalonia" Version="11.2.999-cibuild0047298-alpha" />
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
 
